@@ -22,7 +22,9 @@ A desktop-first law firm operations platform, starting with a single firm and de
 
 ## Current implementation
 
-The initial UI scaffold includes a responsive workspace shell, navigation, dashboard overview and placeholder routes for the planned modules. Dashboard figures are intentionally blank; no sample financial or client data is represented as real firm data.
+The first UI foundation includes a responsive workspace shell, desktop sidebar, mobile navigation, dashboard overview, loading and not-found states, and clearly labelled placeholder routes for planned modules. Dashboard figures are intentionally blank; no sample financial or client data is represented as real firm data.
+
+The workspace shell currently uses illustrative firm and administrator labels. Replace these with authenticated firm and user data when authentication is implemented.
 
 Backend integrations are not connected yet. Do not enter confidential client or financial information until authentication, row-level security, access controls, audit logging and backups have been implemented and reviewed.
 
@@ -40,7 +42,7 @@ See `.env.example`. Supabase and Google credentials are placeholders only; no se
 
 ## Next engineering stages
 
-1. Verify local build and refine the dashboard interaction patterns.
+1. Verify local build and refine dashboard interaction patterns.
 2. Design the relational schema and firm-scoped access model.
 3. Implement Supabase authentication, row-level security and audit events.
 4. Build clients, matters, tasks and calendar workflows.
