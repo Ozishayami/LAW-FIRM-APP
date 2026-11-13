@@ -15,8 +15,8 @@ The schema was provisioned in the connected Supabase project through the Supabas
 - 20261113180529_restrict_private_trigger_function_execution
 - 20261113183439_tasks_calendar_workflow_indexes_and_validation
 - 20261113183958_checklist_template_items_baseline
-- 20261113185000_remove_duplicate_calendar_start_index
-- 20261113185500_atomic_checklist_template_creation
+- 20261113184053_remove_duplicate_calendar_start_index
+- 20261113184111_atomic_checklist_template_creation
 
 **Important:** The remote migration history exists, but the original SQL migration bodies have not yet been exported into checked-in `supabase/migrations` files. Do not treat this repository as a reproducible schema source yet, and do not run a fresh baseline against the already-provisioned project. Before adopting Supabase CLI for future changes, export/pull the current schema and establish a checked-in baseline safely. Use a separate development project or branch for schema iteration where available.
 
