@@ -1750,6 +1750,10 @@ export type Database = {
         }
         Returns: string
       }
+      next_firm_reference: {
+        Args: { p_firm_id: string; p_sequence_key: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
