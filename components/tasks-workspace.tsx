@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search, CheckSquare, Clock3, AlertCircle, X, ArrowUpRight } from "lucide-react";
+import { Plus, Search, CheckSquare, Clock3, AlertCircle, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
 
