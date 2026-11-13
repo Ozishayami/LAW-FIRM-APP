@@ -2,7 +2,7 @@
 
 import {useMemo,useState} from "react";
 import {useRouter} from "next/navigation";
-import {ArrowLeft,ArrowRight,CalendarDays,Clock3,MapPin,Plus,X,List,Grid3X3} from "lucide-react";
+import {ArrowLeft,ArrowRight,CalendarDays,Plus,X,List,Grid3X3} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
 import type {Tables} from "@/lib/supabase/database.types";
 
@@ -12,7 +12,6 @@ const label=(s:string)=>s.replaceAll("_"," ");
 const monthTitle=(d:Date)=>new Intl.DateTimeFormat("en-NG",{month:"long",year:"numeric",timeZone:"Africa/Lagos"}).format(d);
 const dayKey=(d:Date)=>new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Lagos",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);
 const dateTime=(s:string)=>new Intl.DateTimeFormat("en-NG",{dateStyle:"medium",timeStyle:"short",timeZone:"Africa/Lagos"}).format(new Date(s));
-const dateOnly=(s:string)=>new Intl.DateTimeFormat("en-NG",{dateStyle:"medium",timeZone:"Africa/Lagos"}).format(new Date(s));
 const localInput=(s:string|null)=>{if(!s)return "";return new Intl.DateTimeFormat("sv-SE",{timeZone:"Africa/Lagos",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(new Date(s)).replace(" ","T");};
 const localIso=(s:string)=>new Date(s+":00+01:00").toISOString();
 
