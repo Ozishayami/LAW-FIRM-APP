@@ -18,10 +18,6 @@ const statusStyles: Record<string, string> = {
   inactive: "bg-slate-100 text-slate-600", archived: "bg-slate-100 text-slate-500"
 };
 
-function makeReference() {
-  return "CL-" + new Date().getFullYear() + "-" + crypto.randomUUID().slice(0, 6).toUpperCase();
-}
-
 export function ClientsWorkspace({ firmId, initialClients, matterCounts }: {
   firmId: string; initialClients: Client[]; matterCounts: Record<string, number>;
 }) {
@@ -56,8 +52,10 @@ export function ClientsWorkspace({ firmId, initialClients, matterCounts }: {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Your session has expired. Sign in again.");
+      const { data: clientRef, error: refError } = await supabase.rpc("next_firm_reference", { p_firm_id: firmId, p_sequence_key: "client" });
+      if (refError || !clientRef) throw refError ?? new Error("Could not generate client reference.");
       const { data, error: insertError } = await supabase.from("clients").insert({
-        firm_id: firmId, client_ref: makeReference(), client_type: clientType,
+        firm_id: firmId, client_ref: clientRef, client_type: clientType,
         display_name: name.trim(), email: email.trim() || null, phone: phone.trim() || null,
         industry: industry.trim() || null, city: city.trim() || null,
         state_region: stateRegion.trim() || null, address: address.trim() || null,
