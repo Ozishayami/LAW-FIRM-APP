@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Construction, Settings2 } from "lucide-react";
+import { ArrowLeft, Construction } from "lucide-react";
 import { notFound } from "next/navigation";
 import { WorkspaceShell } from "@/components/workspace-shell";
 
