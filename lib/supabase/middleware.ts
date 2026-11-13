@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import type { Database } from "@/lib/supabase/database.types";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -7,7 +8,7 @@ export async function updateSession(request: NextRequest) {
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) return response;
 
-  const supabase = createServerClient(url, key, {
+  const supabase = createServerClient<Database>(url, key, {
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll(cookiesToSet, headers) {
@@ -33,7 +34,14 @@ export async function updateSession(request: NextRequest) {
 
   if (data?.claims && !isPublic) {
     const userId = data.claims.sub;
-    const { data: membership, error } = await supabase.from("firm_memberships").select("id").eq("user_id", userId).eq("status", "active").limit(1).maybeSingle();
+    const { data: membership, error } = await supabase
+      .from("firm_memberships")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("status", "active")
+      .limit(1)
+      .maybeSingle();
+
     if (error) return new NextResponse("Unable to verify workspace access. Please try again.", { status: 503 });
     if (!membership && !isSetup) {
       const redirectUrl = request.nextUrl.clone();
@@ -48,5 +56,6 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
   }
+
   return response;
 }
