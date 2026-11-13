@@ -32,30 +32,22 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (data?.claims && !isPublic) {
+  if (data?.claims) {
     const userId = data.claims.sub;
-    const { data: membership, error } = await supabase
-      .from("firm_memberships")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("status", "active")
-      .limit(1)
-      .maybeSingle();
-
+    const { data: membership, error } = await supabase.from("firm_memberships").select("id").eq("user_id", userId).eq("status", "active").limit(1).maybeSingle();
     if (error) return new NextResponse("Unable to verify workspace access. Please try again.", { status: 503 });
-    if (!membership && !isSetup) {
+    if (!membership && !isSetup && !pathname.startsWith("/auth")) {
       const redirectUrl = request.nextUrl.clone();
       redirectUrl.pathname = "/setup";
       redirectUrl.search = "";
       return NextResponse.redirect(redirectUrl);
     }
-    if (membership && isSetup) {
+    if (membership && (isSetup || pathname === "/login")) {
       const redirectUrl = request.nextUrl.clone();
       redirectUrl.pathname = "/";
       redirectUrl.search = "";
       return NextResponse.redirect(redirectUrl);
     }
   }
-
   return response;
 }
