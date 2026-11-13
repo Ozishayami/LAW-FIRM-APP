@@ -20,10 +20,13 @@ export function LoginForm() {
       const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
       const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}` },
+        options: {
+          shouldCreateUser: false,
+          emailRedirectTo: window.location.origin + "/auth/callback?next=" + encodeURIComponent(safeNext),
+        },
       });
       if (error) throw error;
-      setMessage("Check your email for your secure sign-in link.");
+      setMessage("If this email belongs to an invited account, a secure sign-in link will arrive shortly.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to send sign-in link. Please try again.");
     } finally {
