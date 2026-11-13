@@ -1,14 +1,12 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const searchParams = useSearchParams();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -16,7 +14,8 @@ export function LoginForm() {
     setMessage("");
     try {
       const supabase = createClient();
-      const next = searchParams.get("next");
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get("next");
       const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
       const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
