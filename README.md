@@ -46,6 +46,14 @@ Run npm run typecheck, npm run lint and npm run build before deployment.
 ## Environment variables
 Only the Supabase project URL and publishable key belong in browser configuration. Never put a Supabase secret/service-role key in a NEXT_PUBLIC variable or commit it to Git. Gmail OAuth variables are placeholders. Gmail is not connected yet.
 
+## Tasks and calendar
+- Task and event queries are scoped to the active firm and remain subject to Supabase RLS.
+- Task status, priority, assignee, due date, client and matter filters are available.
+- Checklist templates create multiple task records in one request; templates are created through an atomic database RPC.
+- Calendar supports hearings, filing deadlines, meetings, limitation dates, internal deadlines, reminders and other events.
+- Task due dates appear in the calendar as read-only items; no duplicate calendar records are created.
+- Dates and times are entered/displayed in Africa/Lagos time. Reminder delivery, recurrence, drag-and-drop and external calendar sync are not implemented.
+
 ## Implementation status
 - [x] Responsive workspace shell and initial dashboard
 - [x] Supabase database schema and RLS foundation deployed
@@ -56,7 +64,10 @@ Only the Supabase project URL and publishable key belong in browser configuratio
 - [ ] Live dashboard metrics and firm profile data
 - [x] Client directory, create flow, status updates and client detail pages
 - [x] Matter register, open-matter flow, status updates and matter detail pages
-- [ ] Tasks, checklists, calendar and reminders
+- [x] Task register with search, filters, assignment, due dates, status updates and detail pages
+- [x] Reusable checklist templates and task generation
+- [x] Calendar month and agenda views, event creation/editing, filters and read-only task due dates
+- [ ] Scheduled reminder delivery and external calendar sync
 - [ ] Financial workflows, posting rules and trust reconciliation
 - [ ] Document upload/versioning UI
 - [ ] Team invitations and granular matter permissions
