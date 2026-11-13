@@ -1741,6 +1741,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_checklist_template: {
+        Args: {
+          p_description: string
+          p_firm_id: string
+          p_items: Json
+          p_name: string
+        }
+        Returns: string
+      }
       create_firm_workspace: {
         Args: {
           p_email?: string
