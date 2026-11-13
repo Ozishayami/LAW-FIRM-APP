@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Construction } from "lucide-react";
+import { ArrowLeft, Construction, Settings2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { WorkspaceShell } from "@/components/workspace-shell";
 
@@ -13,6 +13,7 @@ const sections: Record<string, { title: string; description: string; items: stri
   documents: { title: "Documents", description: "Keep matter documents organised, searchable and access-controlled.", items: ["Private document storage", "Client and matter categorisation", "Version history and access permissions", "Document activity records"] },
   reports: { title: "Reports", description: "Understand workload and financial performance across the firm.", items: ["Revenue and outstanding receivables", "Billable time and expenses", "Matter and client activity", "Team workload and task completion"] },
   team: { title: "Team", description: "Set up the people and permissions behind your firm's operations.", items: ["Partners, associates and support staff", "Role-based permissions", "Matter assignment and workload", "Auditable activity history"] },
+  settings: { title: "Settings", description: "Manage the firm workspace, preferences and connected services.", items: ["Firm profile and workspace details", "User roles and access policies", "Email and calendar connections", "Numbering, currency and tax preferences"] },
 };
 export default async function SectionPage({ params }: { params: Promise<{ section: string }> }) {
   const { section } = await params;
