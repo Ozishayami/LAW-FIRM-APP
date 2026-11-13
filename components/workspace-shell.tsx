@@ -52,14 +52,14 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
         <div className="mt-auto border-t border-[#edf0f3] pt-4">
           <Link href="/settings" className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] ${isActive("/settings") ? "bg-[#edf2f7] font-semibold text-[#203d5c]" : "text-[#657182] hover:bg-[#f6f8fa]"}`}>Settings</Link>
           <div className="mt-3 flex items-center gap-3 rounded-xl bg-[#f7f8fa] p-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#dce5ed] text-xs font-semibold text-[#294763]">EA</div>
-            <div className="min-w-0 flex-1"><div className="truncate text-xs font-semibold">Everlaw Associates</div><div className="text-[10px] text-[#8993a0]">Workspace admin · Preview</div></div><ChevronDown size={14} className="text-[#8993a0]"/>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#dce5ed] text-xs font-semibold text-[#294763]">FW</div>
+            <div className="min-w-0 flex-1"><div className="truncate text-xs font-semibold">Your firm</div><div className="text-[10px] text-[#8993a0]">Workspace admin · Preview</div></div><ChevronDown size={14} className="text-[#8993a0]"/>
           </div>
         </div>
       </aside>
       <div className="min-w-0 flex-1">
         <header className="flex h-[68px] items-center justify-between border-b border-[#e8ebef] bg-white px-5 sm:px-8">
-          <div className="flex items-center gap-2 text-xs text-[#8a95a3]"><Link href="/" className="font-semibold text-[#172333] lg:hidden">Counsel</Link><span className="hidden lg:inline">Everlaw Associates</span><span className="hidden lg:inline">/</span><span className="hidden lg:inline text-[#34465a]">Workspace</span></div>
+          <div className="flex items-center gap-2 text-xs text-[#8a95a3]"><Link href="/" className="font-semibold text-[#172333] lg:hidden">Counsel</Link><span className="hidden lg:inline">Your firm</span><span className="hidden lg:inline">/</span><span className="hidden lg:inline text-[#34465a]">Workspace</span></div>
           <div className="flex items-center gap-3"><Link href="/tasks" aria-label="View tasks and reminders" className="relative rounded-lg p-2 text-[#738091] hover:bg-[#f5f7f9]"><Bell size={17}/></Link><div className="hidden h-7 w-px bg-[#e8ebef] sm:block"/><div className="flex items-center gap-2"><div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e5eaf0] text-[11px] font-semibold text-[#294763]">OJ</div><span className="hidden text-xs font-medium text-[#455365] sm:inline">Firm administrator</span></div></div>
         </header>
         <nav aria-label="Mobile navigation" className="flex gap-1 overflow-x-auto border-b border-[#e8ebef] bg-white px-4 py-2 lg:hidden">{[...mainNav, ...adminNav].map(item => <NavLink key={item.href} item={item} active={isActive(item.href)} />)}</nav>
