@@ -1741,7 +1741,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_firm_workspace: {
+        Args: {
+          p_email?: string
+          p_legal_name?: string
+          p_name: string
+          p_slug: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
