@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Search, BriefcaseBusiness, X, ArrowUpRight, CalendarDays, Filter } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import type { Tables } from "@/lib/supabase/database.types";
+import type { Tables, TablesUpdate } from "@/lib/supabase/database.types";
 
 type Matter = Tables<"matters">;
 type ClientOption = { id: string; display_name: string; client_ref: string };
@@ -79,7 +79,7 @@ export function MattersWorkspace({ firmId, initialMatters, clients }: {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setError("Your session has expired. Sign in again."); return; }
-    const update: Tables<"matters">["Update"] = { status, updated_by: user.id };
+    const update: TablesUpdate<"matters"> = { status, updated_by: user.id };
     if (status === "closed") update.closed_on = new Date().toISOString().slice(0,10);
     if (status === "open" || status === "on_hold") update.closed_on = null;
     const { error: updateError } = await supabase.from("matters").update(update).eq("firm_id", firmId).eq("id", matter.id);
