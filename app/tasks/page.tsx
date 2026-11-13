@@ -16,7 +16,9 @@ export default async function TasksPage() {
     supabase.from("tasks").select("*").eq("firm_id",membership.firm_id).order("due_at",{ascending:true,nullsFirst:false}),
     supabase.from("clients").select("id,display_name").eq("firm_id",membership.firm_id).order("display_name"),
     supabase.from("matters").select("id,title,matter_ref,client_id").eq("firm_id",membership.firm_id).order("title"),
-    supabase.from("firm_memberships").select("user_id,profiles(full_name,email)").eq("firm_id",membership.firm_id).eq("status","active")
+    supabase.from("firm_memberships").select("user_id,profiles(full_name,email)").eq("firm_id",membership.firm_id).eq("status","active"),
+    supabase.from("checklist_templates").select("*").eq("firm_id",membership.firm_id).eq("is_active",true).order("name"),
+    supabase.from("checklist_template_items").select("*").eq("firm_id",membership.firm_id).order("sort_order")
   ]);
   if(error||clientsError||mattersError||membersError||templatesError||templateItemsError) throw new Error("Unable to load task workspace data.");
   const clientOptions=(clients??[]).map(c=>({id:c.id,label:c.display_name}));
