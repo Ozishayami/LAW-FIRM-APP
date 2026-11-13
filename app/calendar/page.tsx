@@ -16,7 +16,7 @@ export default async function CalendarPage(){
  ]);
  if(error||tasksError||clientsError||mattersError||membersError)throw new Error("Unable to load calendar workspace data.");
  const clientOptions=(clients??[]).map(c=>({id:c.id,label:c.display_name}));const clientNames=Object.fromEntries(clientOptions.map(c=>[c.id,c.label]));
- const matterOptions=(matters??[]).map(m=>({id:m.id,label:\`\${clientNames[m.client_id]??"Client"} · \${m.matter_ref} · \${m.title}\`}));
+ const matterOptions=(matters??[]).map(m=>({id:m.id,label:`${clientNames[m.client_id]??"Client"} · ${m.matter_ref} · ${m.title}`}));
  const people=(members??[]).map(m=>{const p=Array.isArray(m.profiles)?m.profiles[0]:m.profiles;return {id:m.user_id,label:p?.full_name||p?.email||"Firm member"};});
  return <WorkspaceShell><CalendarWorkspace firmId={membership.firm_id} initialEvents={events??[]} initialTasks={tasks??[]} clients={clientOptions} matters={matterOptions} people={people}/></WorkspaceShell>;
 }
