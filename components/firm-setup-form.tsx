@@ -22,8 +22,8 @@ export function FirmSetupForm() {
       const { error: createError } = await supabase.rpc("create_firm_workspace", {
         p_name: name.trim(),
         p_slug: slug,
-        p_legal_name: legalName.trim() || null,
-        p_email: email.trim() || null,
+        p_legal_name: legalName.trim() || undefined,
+        p_email: email.trim() || undefined,
       });
       if (createError) throw createError;
       router.replace("/"); router.refresh();
