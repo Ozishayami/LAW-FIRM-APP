@@ -1,50 +1,63 @@
-# Law Firm Management System
+# Counsel — Law Firm Operations Workspace
 
-A desktop-first law firm operations platform, starting with a single firm and designed for future isolated firm workspaces.
-
-## Product scope
-
-- Dashboard and operational overview
-- Clients and matters
-- Manually managed tasks and checklists with automated reminder capability planned
-- Calendar and deadline management
-- Gmail / Google Workspace communications
-- Fixed-fee and hourly billing, invoices, receipts and expenses
-- Documents, team permissions and reports
+A desktop-first legal practice operations platform built with Next.js and Supabase. The data model is firm-scoped from day one so multiple law firms can be supported with database-enforced isolation.
 
 ## Stack
-
 - Next.js App Router, React and TypeScript
-- Tailwind CSS v4
-- Lucide icons
-- Supabase is the planned backend for PostgreSQL, authentication and private file storage
-- Gmail API / Google Workspace integration is planned
+- Tailwind CSS v4 and Lucide icons
+- Supabase PostgreSQL, Auth, Row Level Security and private Storage
+- Gmail / Google Workspace integration planned
 
-## Current implementation
+## Supabase database modules
+- Firms, profiles and firm memberships
+- Clients and client contacts
+- Matters, matter team members and matter parties
+- Tasks, checklist templates and checklist items
+- Calendar events and reminders
+- Time entries, invoices and invoice line items
+- Payments, payment allocations and payment reversals
+- Expenses, disbursements and client trust accounts / transactions
+- Documents and communications
+- Firm numbering sequences and audit logs
 
-The first UI foundation includes a responsive workspace shell, desktop sidebar, mobile navigation, dashboard overview, loading and not-found states, and clearly labelled placeholder routes for planned modules. Dashboard figures are intentionally blank; no sample financial or client data is represented as real firm data.
+Every business table includes a firm scope. Access is controlled by RLS and membership roles. Financial tables have a narrower role set than ordinary matter and task records. Audit rows are written by database triggers and are not directly writable by application users. The document bucket is private and its object path must start with the firm's UUID.
 
-The workspace shell currently uses illustrative firm and administrator labels. Replace these with authenticated firm and user data when authentication is implemented.
+**Important:** The schema is a foundation, not a completed legal-accounting product. Financial posting rules, trust reconciliation, invoice totals, matter-level confidentiality permissions, retention policies and backup/recovery procedures still require implementation and review before real client or financial records are entered.
 
-Backend integrations are not connected yet. Do not enter confidential client or financial information until authentication, row-level security, access controls, audit logging and backups have been implemented and reviewed.
+## Authentication
+- Supabase Auth email magic-link sign-in.
+- The login flow does not create new users (shouldCreateUser is false).
+- Existing users must first be invited/created by an administrator in Supabase Auth.
+- After sign-in, users without a firm membership are sent to firm setup and become the initial owner of the firm they create.
+- Middleware checks the signed-in user's active membership before allowing access to the workspace.
 
-## Run locally
+Configure the Auth email templates and redirect allow-list in Supabase. Add local and production callback URLs ending in /auth/callback.
 
+## Local development
 1. Install Node.js (current LTS).
-2. Clone this repository.
-3. Run `npm install`.
-4. Copy `.env.example` to `.env.local` when backend credentials are ready.
-5. Run `npm run dev` and open `http://localhost:3000`.
+2. Clone the repository and check out the feature branch.
+3. Copy .env.example to .env.local.
+4. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY using the project's Connect dialog.
+5. Run npm install.
+6. Run npm run dev and open http://localhost:3000.
+
+Run npm run typecheck, npm run lint and npm run build before deployment.
 
 ## Environment variables
+Only the Supabase project URL and publishable key belong in browser configuration. Never put a Supabase secret/service-role key in a NEXT_PUBLIC variable or commit it to Git. Gmail OAuth variables are placeholders. Gmail is not connected yet.
 
-See `.env.example`. Supabase and Google credentials are placeholders only; no secrets belong in source control.
-
-## Next engineering stages
-
-1. Verify local build and refine dashboard interaction patterns.
-2. Design the relational schema and firm-scoped access model.
-3. Implement Supabase authentication, row-level security and audit events.
-4. Build clients, matters, tasks and calendar workflows.
-5. Add financial records with immutable audit history and reversal/void flows.
-6. Integrate Gmail after OAuth and permission design.
+## Implementation status
+- [x] Responsive workspace shell and initial dashboard
+- [x] Supabase database schema and RLS foundation deployed
+- [x] Private document storage bucket and storage policies
+- [x] Audit triggers for important record changes
+- [x] Supabase SSR client utilities and auth callback
+- [x] Email magic-link sign-in and first-firm setup
+- [ ] Live dashboard metrics and firm profile data
+- [ ] Full client and matter CRUD screens
+- [ ] Tasks, checklists, calendar and reminders
+- [ ] Financial workflows, posting rules and trust reconciliation
+- [ ] Document upload/versioning UI
+- [ ] Team invitations and granular matter permissions
+- [ ] Gmail OAuth and communications UI
+- [ ] Automated tests, deployment and security review
