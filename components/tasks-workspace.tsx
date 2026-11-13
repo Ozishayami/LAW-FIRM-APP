@@ -48,9 +48,11 @@ export function TasksWorkspace({firmId,initialTasks,clients,matters,people}:{fir
   const filtered=useMemo(()=>tasks.filter(t=>{
     const term=query.trim().toLowerCase();
     const text=[t.title,t.description,clientLabels[t.client_id??""],matterLabels[t.matter_id??""],personLabels[t.assigned_to??""]].some(v=>v?.toLowerCase().includes(term));
-    const now=new Date(), today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    const now=new Date();
     const dueDate=t.due_at?new Date(t.due_at):null;
-    const dueMatch=due==="all"||(due==="none"&&!dueDate)||(due==="overdue"&&dueDate&&dueDate<now&&t.status!=="completed"&&t.status!=="cancelled")||(due==="today"&&dueDate&&dueDate.toDateString()===today.toDateString())||(due==="upcoming"&&dueDate&&dueDate>=today);
+    const todayKey=new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Lagos",year:"numeric",month:"2-digit",day:"2-digit"}).format(now);
+    const dueKey=dueDate?new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Lagos",year:"numeric",month:"2-digit",day:"2-digit"}).format(dueDate):null;
+    const dueMatch=due==="all"||(due==="none"&&!dueDate)||(due==="overdue"&&dueDate&&dueDate<now&&t.status!=="completed"&&t.status!=="cancelled")||(due==="today"&&dueKey===todayKey)||(due==="upcoming"&&dueKey&&dueKey>=todayKey);
     return (!term||text)&&(status==="all"||t.status===status)&&(priority==="all"||t.priority===priority)&&(assignee==="all"||(assignee==="unassigned"&&!t.assigned_to)||t.assigned_to===assignee)&&(dueMatch)&&(client==="all"||t.client_id===client)&&(matter==="all"||t.matter_id===matter);
   }),[tasks,query,status,priority,assignee,due,client,matter,clientLabels,matterLabels,personLabels]);
   const overdue=tasks.filter(t=>t.due_at&&new Date(t.due_at)<new Date()&&!["completed","cancelled"].includes(t.status)).length;
