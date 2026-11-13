@@ -64,7 +64,7 @@ export function TasksWorkspace({firmId,initialTasks,clients,matters,people}:{fir
     setSaving(true);setError("");
     try{
       const supabase=createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)throw new Error("Your session has expired. Sign in again.");
-      const payload={title:title.trim(),description:description.trim()||null,status:taskStatus,priority:taskPriority,due_at:fromLocalInput(dueAt),assigned_to:assignedTo||null,client_id:clientId||null,matter_id:matterId||null};
+      const payload={title:title.trim(),description:description.trim()||null,status:taskStatus,priority:taskPriority,due_at:fromLocalInput(dueAt),assigned_to:assignedTo||null,client_id:clientId||null,matter_id:matterId||null,completed_at:taskStatus==="completed"?(editing?.completed_at??new Date().toISOString()):null};
       if(editing){
         const {data,error:writeError}=await supabase.from("tasks").update(payload).eq("firm_id",firmId).eq("id",editing.id).select("*").single();
         if(writeError)throw writeError;setTasks(old=>old.map(t=>t.id===editing.id?data:t));
@@ -76,7 +76,7 @@ export function TasksWorkspace({firmId,initialTasks,clients,matters,people}:{fir
     }catch(e){setError(e instanceof Error?e.message:"Unable to save task.");}finally{setSaving(false);}
   }
   async function changeStatus(task:Task,next:string){
-    const supabase=createClient();const {error:e}=await supabase.from("tasks").update({status:next}).eq("firm_id",firmId).eq("id",task.id);
+    const supabase=createClient();const {error:e}=await supabase.from("tasks").update({status:next,completed_at:next==="completed"?(task.completed_at??new Date().toISOString()):null}).eq("firm_id",firmId).eq("id",task.id);
     if(e){setError(e.message);return;}setTasks(old=>old.map(t=>t.id===task.id?{...t,status:next,completed_at:next==="completed"?new Date().toISOString():null}:t));router.refresh();
   }
   return <div>
