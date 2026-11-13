@@ -12,11 +12,14 @@ export default async function CalendarPage(){
   supabase.from("tasks").select("*").eq("firm_id",membership.firm_id).not("due_at","is",null),
   supabase.from("clients").select("id,display_name").eq("firm_id",membership.firm_id).order("display_name"),
   supabase.from("matters").select("id,title,matter_ref,client_id").eq("firm_id",membership.firm_id).order("title"),
-  supabase.from("firm_memberships").select("user_id,profiles(full_name,email)").eq("firm_id",membership.firm_id).eq("status","active")
+  supabase.from("firm_memberships").select("user_id").eq("firm_id",membership.firm_id).eq("status","active")
  ]);
  if(error||tasksError||clientsError||mattersError||membersError)throw new Error("Unable to load calendar workspace data.");
  const clientOptions=(clients??[]).map(c=>({id:c.id,label:c.display_name}));const clientNames=Object.fromEntries(clientOptions.map(c=>[c.id,c.label]));
  const matterOptions=(matters??[]).map(m=>({id:m.id,label:`${clientNames[m.client_id]??"Client"} · ${m.matter_ref} · ${m.title}`}));
- const people=(members??[]).map(m=>{const p=Array.isArray(m.profiles)?m.profiles[0]:m.profiles;return {id:m.user_id,label:p?.full_name||p?.email||"Firm member"};});
+ const memberIds=(members??[]).map(m=>m.user_id);
+  const {data:profiles,error:profilesError}=memberIds.length?await supabase.from("profiles").select("id,full_name,email").in("id",memberIds):{data:[],error:null};
+  if(profilesError)throw new Error("Unable to load firm member profiles.");
+  const people=(members??[]).map(m=>{const p=(profiles??[]).find(profile=>profile.id===m.user_id);return {id:m.user_id,label:p?.full_name||p?.email||"Firm member"};});
  return <WorkspaceShell><CalendarWorkspace firmId={membership.firm_id} initialEvents={events??[]} initialTasks={tasks??[]} clients={clientOptions} matters={matterOptions} people={people}/></WorkspaceShell>;
 }
