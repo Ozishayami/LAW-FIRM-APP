@@ -20,18 +20,33 @@ export async function updateSession(request: NextRequest) {
   });
 
   const { data } = await supabase.auth.getClaims();
-  const isPublic = request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/auth");
+  const pathname = request.nextUrl.pathname;
+  const isPublic = pathname.startsWith("/login") || pathname.startsWith("/auth");
+  const isSetup = pathname.startsWith("/setup");
+
   if (!data?.claims && !isPublic) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
-    redirectUrl.searchParams.set("next", request.nextUrl.pathname);
+    redirectUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(redirectUrl);
   }
-  if (data?.claims && request.nextUrl.pathname === "/login") {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/";
-    redirectUrl.search = "";
-    return NextResponse.redirect(redirectUrl);
+
+  if (data?.claims && !isPublic) {
+    const userId = data.claims.sub;
+    const { data: membership, error } = await supabase.from("firm_memberships").select("id").eq("user_id", userId).eq("status", "active").limit(1).maybeSingle();
+    if (error) return new NextResponse("Unable to verify workspace access. Please try again.", { status: 503 });
+    if (!membership && !isSetup) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/setup";
+      redirectUrl.search = "";
+      return NextResponse.redirect(redirectUrl);
+    }
+    if (membership && isSetup) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/";
+      redirectUrl.search = "";
+      return NextResponse.redirect(redirectUrl);
+    }
   }
   return response;
 }
