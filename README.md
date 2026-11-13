@@ -54,7 +54,8 @@ Only the Supabase project URL and publishable key belong in browser configuratio
 - [x] Supabase SSR client utilities and auth callback
 - [x] Email magic-link sign-in and first-firm setup
 - [ ] Live dashboard metrics and firm profile data
-- [ ] Full client and matter CRUD screens
+- [x] Client directory, create flow, status updates and client detail pages
+- [x] Matter register, open-matter flow, status updates and matter detail pages
 - [ ] Tasks, checklists, calendar and reminders
 - [ ] Financial workflows, posting rules and trust reconciliation
 - [ ] Document upload/versioning UI
