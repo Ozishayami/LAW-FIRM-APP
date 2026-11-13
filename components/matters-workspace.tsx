@@ -15,7 +15,6 @@ const statusStyles: Record<string, string> = {
   on_hold: "bg-amber-50 text-amber-700", closed: "bg-slate-100 text-slate-600",
   archived: "bg-slate-100 text-slate-500"
 };
-function makeReference() { return "MAT-" + new Date().getFullYear() + "-" + crypto.randomUUID().slice(0, 6).toUpperCase(); }
 
 export function MattersWorkspace({ firmId, initialMatters, clients }: {
   firmId: string; initialMatters: Matter[]; clients: ClientOption[];
@@ -56,8 +55,10 @@ export function MattersWorkspace({ firmId, initialMatters, clients }: {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Your session has expired. Sign in again.");
+      const { data: matterRef, error: refError } = await supabase.rpc("next_firm_reference", { p_firm_id: firmId, p_sequence_key: "matter" });
+      if (refError || !matterRef) throw refError ?? new Error("Could not generate matter reference.");
       const { data, error: insertError } = await supabase.from("matters").insert({
-        firm_id: firmId, client_id: clientId, matter_ref: makeReference(), title: title.trim(),
+        firm_id: firmId, client_id: clientId, matter_ref: matterRef, title: title.trim(),
         practice_area: practiceArea.trim() || null, matter_type: matterType.trim() || null,
         description: description.trim() || null, priority, billing_type: billingType,
         agreed_fee: agreedFee.trim() ? Number(agreedFee) : null, court_or_tribunal: court.trim() || null,
