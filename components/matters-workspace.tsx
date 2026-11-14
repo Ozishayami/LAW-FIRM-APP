@@ -32,7 +32,6 @@ export function MattersWorkspace({ firmId, initialMatters, clients }: {
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("normal");
   const [billingType, setBillingType] = useState("fixed_fee");
-  const [agreedFee, setAgreedFee] = useState("");
   const [court, setCourt] = useState("");
   const [courtReference, setCourtReference] = useState("");
   const [openedOn, setOpenedOn] = useState(new Date().toISOString().slice(0,10));
@@ -61,13 +60,13 @@ export function MattersWorkspace({ firmId, initialMatters, clients }: {
         firm_id: firmId, client_id: clientId, matter_ref: matterRef, title: title.trim(),
         practice_area: practiceArea.trim() || null, matter_type: matterType.trim() || null,
         description: description.trim() || null, priority, billing_type: billingType,
-        agreed_fee: agreedFee.trim() ? Number(agreedFee) : null, court_or_tribunal: court.trim() || null,
+        court_or_tribunal: court.trim() || null,
         court_reference: courtReference.trim() || null, opened_on: openedOn, confidentiality,
         status: "open", currency: "NGN", created_by: user.id, updated_by: user.id
       }).select("*").single();
       if (insertError) throw insertError;
       setMatters(current => [data, ...current]);
-      setTitle(""); setPracticeArea(""); setMatterType(""); setDescription(""); setAgreedFee(""); setCourt(""); setCourtReference("");
+      setTitle(""); setPracticeArea(""); setMatterType(""); setDescription(""); setCourt(""); setCourtReference("");
       setPriority("normal"); setBillingType("fixed_fee"); setConfidentiality("standard");
       setShowForm(false); router.refresh();
     } catch (caught) {
@@ -113,7 +112,6 @@ export function MattersWorkspace({ firmId, initialMatters, clients }: {
         <label className="block"><span className="mb-1.5 block text-xs font-medium text-[#536174]">Matter type</span><input value={matterType} onChange={e=>setMatterType(e.target.value)} placeholder="e.g. Advisory, litigation, transaction" className="w-full rounded-lg border border-[#dfe4e9] px-3 py-2.5 text-sm outline-none focus:border-[#7892aa]"/></label>
         <label className="block"><span className="mb-1.5 block text-xs font-medium text-[#536174]">Priority</span><select value={priority} onChange={e=>setPriority(e.target.value)} className="w-full rounded-lg border border-[#dfe4e9] bg-white px-3 py-2.5 text-sm outline-none"><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></label>
         <label className="block"><span className="mb-1.5 block text-xs font-medium text-[#536174]">Billing arrangement</span><select value={billingType} onChange={e=>setBillingType(e.target.value)} className="w-full rounded-lg border border-[#dfe4e9] bg-white px-3 py-2.5 text-sm outline-none"><option value="fixed_fee">Fixed fee</option><option value="hourly">Hourly</option><option value="retainer">Retainer</option><option value="pro_bono">Pro bono</option><option value="other">Other</option></select></label>
-        <label className="block"><span className="mb-1.5 block text-xs font-medium text-[#536174]">Agreed fee (NGN)</span><input type="number" min="0" step="0.01" value={agreedFee} onChange={e=>setAgreedFee(e.target.value)} placeholder="Optional" className="w-full rounded-lg border border-[#dfe4e9] px-3 py-2.5 text-sm outline-none"/></label>
         <label className="block"><span className="mb-1.5 block text-xs font-medium text-[#536174]">Date opened *</span><input type="date" required value={openedOn} onChange={e=>setOpenedOn(e.target.value)} className="w-full rounded-lg border border-[#dfe4e9] px-3 py-2.5 text-sm outline-none"/></label>
         <label className="block"><span className="mb-1.5 block text-xs font-medium text-[#536174]">Court / tribunal</span><input value={court} onChange={e=>setCourt(e.target.value)} placeholder="If applicable" className="w-full rounded-lg border border-[#dfe4e9] px-3 py-2.5 text-sm outline-none"/></label>
         <label className="block"><span className="mb-1.5 block text-xs font-medium text-[#536174]">Court reference</span><input value={courtReference} onChange={e=>setCourtReference(e.target.value)} placeholder="Suit / case number" className="w-full rounded-lg border border-[#dfe4e9] px-3 py-2.5 text-sm outline-none"/></label>
