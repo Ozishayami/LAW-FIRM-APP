@@ -978,6 +978,81 @@ export type Database = {
           },
         ]
       }
+      matter_external_documents: {
+        Row: {
+          category: string | null
+          confidentiality: string
+          created_at: string
+          created_by: string | null
+          file_name: string
+          firm_id: string
+          id: string
+          last_synced_at: string | null
+          matter_id: string
+          mime_type: string | null
+          provider: string
+          provider_file_id: string
+          provider_modified_at: string | null
+          provider_revision_id: string | null
+          sync_status: string
+          updated_at: string
+          web_view_link: string
+        }
+        Insert: {
+          category?: string | null
+          confidentiality?: string
+          created_at?: string
+          created_by?: string | null
+          file_name: string
+          firm_id: string
+          id?: string
+          last_synced_at?: string | null
+          matter_id: string
+          mime_type?: string | null
+          provider?: string
+          provider_file_id: string
+          provider_modified_at?: string | null
+          provider_revision_id?: string | null
+          sync_status?: string
+          updated_at?: string
+          web_view_link: string
+        }
+        Update: {
+          category?: string | null
+          confidentiality?: string
+          created_at?: string
+          created_by?: string | null
+          file_name?: string
+          firm_id?: string
+          id?: string
+          last_synced_at?: string | null
+          matter_id?: string
+          mime_type?: string | null
+          provider?: string
+          provider_file_id?: string
+          provider_modified_at?: string | null
+          provider_revision_id?: string | null
+          sync_status?: string
+          updated_at?: string
+          web_view_link?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matter_external_documents_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matter_external_documents_matter_fkey"
+            columns: ["firm_id", "matter_id"]
+            isOneToOne: false
+            referencedRelation: "matters"
+            referencedColumns: ["firm_id", "id"]
+          },
+        ]
+      }
       matter_parties: {
         Row: {
           contact_details: Json
