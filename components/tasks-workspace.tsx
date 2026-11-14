@@ -20,7 +20,8 @@ const toLocalInput = (value: string | null) => {
 };
 const fromLocalInput = (value: string) => value ? new Date(value + ":00+01:00").toISOString() : null;
 
-export function TasksWorkspace({firmId,initialTasks,clients,matters,people}:{firmId:string;initialTasks:Task[];clients:Option[];matters:Option[];people:Option[]}) {
+export function TasksWorkspace({firmId,initialTasks,clients,matters,people,initialEditTaskId}:{firmId:string;initialTasks:Task[];clients:Option[];matters:Option[];people:Option[];initialEditTaskId?:string|null}) {
+  const initialEditingTask = initialEditTaskId ? initialTasks.find(task => task.id === initialEditTaskId) ?? null : null;
   const [tasks,setTasks]=useState(initialTasks);
   const [query,setQuery]=useState("");
   const [status,setStatus]=useState("all");
@@ -29,18 +30,18 @@ export function TasksWorkspace({firmId,initialTasks,clients,matters,people}:{fir
   const [due,setDue]=useState("all");
   const [client,setClient]=useState("all");
   const [matter,setMatter]=useState("all");
-  const [showForm,setShowForm]=useState(false);
+  const [showForm,setShowForm]=useState(Boolean(initialEditingTask));
   const [saving,setSaving]=useState(false);
   const [error,setError]=useState("");
-  const [editing,setEditing]=useState<Task|null>(null);
-  const [title,setTitle]=useState("");
-  const [description,setDescription]=useState("");
-  const [taskStatus,setTaskStatus]=useState("todo");
-  const [taskPriority,setTaskPriority]=useState("normal");
-  const [dueAt,setDueAt]=useState("");
-  const [assignedTo,setAssignedTo]=useState("");
-  const [clientId,setClientId]=useState("");
-  const [matterId,setMatterId]=useState("");
+  const [editing,setEditing]=useState<Task|null>(initialEditingTask);
+  const [title,setTitle]=useState(initialEditingTask?.title ?? "");
+  const [description,setDescription]=useState(initialEditingTask?.description ?? "");
+  const [taskStatus,setTaskStatus]=useState(initialEditingTask?.status ?? "todo");
+  const [taskPriority,setTaskPriority]=useState(initialEditingTask?.priority ?? "normal");
+  const [dueAt,setDueAt]=useState(toLocalInput(initialEditingTask?.due_at ?? null));
+  const [assignedTo,setAssignedTo]=useState(initialEditingTask?.assigned_to ?? "");
+  const [clientId,setClientId]=useState(initialEditingTask?.client_id ?? "");
+  const [matterId,setMatterId]=useState(initialEditingTask?.matter_id ?? "");
   const router=useRouter();
   const clientLabels=useMemo(()=>Object.fromEntries(clients.map(x=>[x.id,x.label])),[clients]);
   const matterLabels=useMemo(()=>Object.fromEntries(matters.map(x=>[x.id,x.label])),[matters]);
@@ -60,6 +61,10 @@ export function TasksWorkspace({firmId,initialTasks,clients,matters,people}:{fir
   function openEditor(task?:Task){
     const t=task??null;setEditing(t);setTitle(t?.title??"");setDescription(t?.description??"");setTaskStatus(t?.status??"todo");setTaskPriority(t?.priority??"normal");setDueAt(toLocalInput(t?.due_at??null));setAssignedTo(t?.assigned_to??"");setClientId(t?.client_id??"");setMatterId(t?.matter_id??"");setError("");setShowForm(true);
   }
+  function closeEditor(){
+    setShowForm(false);
+    if(initialEditTaskId) router.replace("/tasks");
+  }
   async function save(event:React.FormEvent<HTMLFormElement>){
     event.preventDefault();if(!title.trim()){setError("Enter a task title.");return;}
     if(matterId&&clientId){const linked=matters.find(m=>m.id===matterId);if(linked&&!linked.label.startsWith(clientLabels[clientId]??"")){setError("Choose the client linked to this matter, or clear the client field.");return;}}
@@ -74,7 +79,9 @@ export function TasksWorkspace({firmId,initialTasks,clients,matters,people}:{fir
         const {data,error:writeError}=await supabase.from("tasks").insert({...payload,firm_id:firmId,created_by:user.id}).select("*").single();
         if(writeError)throw writeError;setTasks(old=>[data,...old]);
       }
-      setShowForm(false);router.refresh();
+      setShowForm(false);
+      if(initialEditTaskId) router.replace("/tasks");
+      else router.refresh();
     }catch(e){setError(e instanceof Error?e.message:"Unable to save task.");}finally{setSaving(false);}
   }
   async function changeStatus(task:Task,next:string){
@@ -93,7 +100,7 @@ export function TasksWorkspace({firmId,initialTasks,clients,matters,people}:{fir
       <label><span className="mb-1.5 block text-xs font-medium text-[#536174]">Assignee</span><select value={assignedTo} onChange={e=>setAssignedTo(e.target.value)} className="w-full rounded-lg border border-[#dfe4e9] bg-white px-3 py-2.5 text-sm"><option value="">Unassigned</option>{people.map(p=><option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
       <label><span className="mb-1.5 block text-xs font-medium text-[#536174]">Client</span><select value={clientId} onChange={e=>{setClientId(e.target.value);setMatterId("");}} className="w-full rounded-lg border border-[#dfe4e9] bg-white px-3 py-2.5 text-sm"><option value="">No client</option>{clients.map(c=><option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
       <label><span className="mb-1.5 block text-xs font-medium text-[#536174]">Matter</span><select value={matterId} onChange={e=>{setMatterId(e.target.value);const m=matters.find(x=>x.id===e.target.value);if(m){const c=clients.find(x=>m.label.startsWith(x.label));if(c)setClientId(c.id);}}} className="w-full rounded-lg border border-[#dfe4e9] bg-white px-3 py-2.5 text-sm"><option value="">No matter</option>{matters.filter(m=>!clientId||m.label.startsWith(clientLabels[clientId]??"")).map(m=><option key={m.id} value={m.id}>{m.label}</option>)}</select></label>
-    </div>{error&&<p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2.5 text-xs text-red-700">{error}</p>}<div className="mt-5 flex justify-end gap-2"><button type="button" onClick={()=>setShowForm(false)} className="rounded-lg border border-[#dfe4e9] px-4 py-2.5 text-xs">Cancel</button><button disabled={saving} className="rounded-lg bg-[#203d5c] px-4 py-2.5 text-xs font-semibold text-white disabled:opacity-60">{saving?"Saving…":"Save task"}</button></div></form>}
+    </div>{error&&<p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2.5 text-xs text-red-700">{error}</p>}<div className="mt-5 flex justify-end gap-2"><button type="button" onClick={closeEditor} className="rounded-lg border border-[#dfe4e9] px-4 py-2.5 text-xs">Cancel</button><button disabled={saving} className="rounded-lg bg-[#203d5c] px-4 py-2.5 text-xs font-semibold text-white disabled:opacity-60">{saving?"Saving…":"Save task"}</button></div></form>}
     <section className="overflow-hidden rounded-xl border border-[#e8ebef] bg-white"><div className="border-b border-[#edf0f3] p-4"><div className="mb-3 flex flex-col justify-between gap-2 sm:flex-row sm:items-center"><div><h2 className="text-sm font-semibold text-[#26384b]">Task register</h2><p className="mt-1 text-[11px] text-[#8a95a3]">{filtered.length} of {tasks.length} tasks</p></div><div className="relative"><Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9aa3af]"/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search tasks, client or matter…" className="w-full rounded-lg border border-[#e3e7eb] py-2 pl-9 pr-3 text-xs sm:w-64"/></div></div>
       <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-6"><select value={status} onChange={e=>setStatus(e.target.value)} className="rounded-lg border border-[#e3e7eb] bg-white px-2 py-2 text-xs"><option value="all">All statuses</option>{statuses.map(s=><option key={s} value={s}>{pretty(s)}</option>)}</select><select value={priority} onChange={e=>setPriority(e.target.value)} className="rounded-lg border border-[#e3e7eb] bg-white px-2 py-2 text-xs"><option value="all">All priorities</option>{priorities.map(s=><option key={s} value={s}>{pretty(s)}</option>)}</select><select value={assignee} onChange={e=>setAssignee(e.target.value)} className="rounded-lg border border-[#e3e7eb] bg-white px-2 py-2 text-xs"><option value="all">All assignees</option><option value="unassigned">Unassigned</option>{people.map(p=><option key={p.id} value={p.id}>{p.label}</option>)}</select><select value={due} onChange={e=>setDue(e.target.value)} className="rounded-lg border border-[#e3e7eb] bg-white px-2 py-2 text-xs"><option value="all">Any due date</option><option value="overdue">Overdue</option><option value="today">Due today</option><option value="upcoming">Upcoming</option><option value="none">No due date</option></select><select value={client} onChange={e=>{setClient(e.target.value);setMatter("all");}} className="rounded-lg border border-[#e3e7eb] bg-white px-2 py-2 text-xs"><option value="all">All clients</option>{clients.map(c=><option key={c.id} value={c.id}>{c.label}</option>)}</select><select value={matter} onChange={e=>setMatter(e.target.value)} className="rounded-lg border border-[#e3e7eb] bg-white px-2 py-2 text-xs"><option value="all">All matters</option>{matters.filter(m=>client==="all"||m.label.startsWith(clientLabels[client]??"")).map(m=><option key={m.id} value={m.id}>{m.label}</option>)}</select></div></div>
       {error&&!showForm&&<p role="alert" className="border-b border-red-100 bg-red-50 px-4 py-2 text-xs text-red-700">{error}</p>}
