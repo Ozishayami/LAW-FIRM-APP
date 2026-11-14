@@ -4,7 +4,8 @@ import { WorkspaceShell } from "@/components/workspace-shell";
 import { TasksWorkspace } from "@/components/tasks-workspace";
 import { ChecklistTemplates } from "@/components/checklist-templates";
 
-export default async function TasksPage() {
+export default async function TasksPage({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
+  const { edit } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -28,5 +29,5 @@ export default async function TasksPage() {
   const {data:profiles,error:profilesError}=memberIds.length?await supabase.from("profiles").select("id,full_name,email").in("id",memberIds):{data:[],error:null};
   if(profilesError)throw new Error("Unable to load firm member profiles.");
   const people=(members??[]).map(m=>{const p=(profiles??[]).find(profile=>profile.id===m.user_id);return {id:m.user_id,label:p?.full_name||p?.email||"Firm member"};});
-  return <WorkspaceShell><ChecklistTemplates firmId={membership.firm_id} initialTemplates={templates??[]} initialItems={templateItems??[]} clients={clientOptions} matters={matterOptions} people={people}/><TasksWorkspace firmId={membership.firm_id} initialTasks={tasks??[]} clients={clientOptions} matters={matterOptions} people={people}/></WorkspaceShell>;
+  return <WorkspaceShell><ChecklistTemplates firmId={membership.firm_id} initialTemplates={templates??[]} initialItems={templateItems??[]} clients={clientOptions} matters={matterOptions} people={people}/><TasksWorkspace firmId={membership.firm_id} initialTasks={tasks??[]} clients={clientOptions} matters={matterOptions} people={people} initialEditTaskId={edit ?? null}/></WorkspaceShell>;
 }
